@@ -7,10 +7,23 @@ import { Calendar, User, Phone, Mail, FileText, ChevronDown, CheckCircle2 } from
 export default function BookingForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000); // Reset after 5s
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
+      });
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 5000);
+      form.reset();
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
   };
 
   return (
@@ -79,31 +92,41 @@ export default function BookingForm() {
                 <p className="text-slate-600">Our team will contact you shortly to confirm your appointment time.</p>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form 
+                name="booking"
+                data-netlify="true"
+                netlify-honeypot="bot-field"
+                onSubmit={handleSubmit} 
+                className="space-y-5"
+              >
+                <input type="hidden" name="form-name" value="booking" />
+                <div hidden>
+                  <input name="bot-field" />
+                </div>
                 <div className="grid md:grid-cols-2 gap-5">
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input type="text" placeholder="Full Name" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                    <input type="text" name="name" placeholder="Full Name" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                   </div>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input type="tel" placeholder="Phone Number" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                    <input type="tel" name="phone" placeholder="Phone Number" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                   </div>
                 </div>
 
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                  <input type="email" placeholder="Email Address" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                  <input type="email" name="email" placeholder="Email Address" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-5">
                   <div className="relative">
                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input type="date" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-600" />
+                    <input type="date" name="date" required className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-600" />
                   </div>
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"><StethoscopeIcon /></div>
-                    <select required defaultValue="" className="w-full pl-12 pr-10 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none text-slate-600 cursor-pointer">
+                    <select name="treatment" required defaultValue="" className="w-full pl-12 pr-10 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none text-slate-600 cursor-pointer">
                       <option value="" disabled>Select Treatment</option>
                       <option value="general">General Checkup</option>
                       <option value="cleaning">Teeth Cleaning</option>
@@ -119,7 +142,7 @@ export default function BookingForm() {
 
                 <div className="relative">
                   <FileText className="absolute left-4 top-4 text-slate-400" size={20} />
-                  <textarea placeholder="Message or specific concerns (optional)" rows={3} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
+                  <textarea name="message" placeholder="Message or specific concerns (optional)" rows={3} className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
                 </div>
 
                 <button type="submit" className="w-full bg-gradient-primary text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Netlify Forms Registrations</title>
+</head>
+<body>
+  <!-- 
+    This hidden form is here just so Netlify's build bots can easily find and parse it. 
+    It matches the exact structure of the form in your React component.
+  -->
+  <form name="booking" netlify netlify-honeypot="bot-field" hidden>
+    <input type="text" name="name" />
+    <input type="tel" name="phone" />
+    <input type="email" name="email" />
+    <input type="date" name="date" />
+    <select name="treatment"></select>
+    <textarea name="message"></textarea>
+  </form>
+</body>
+</html>
